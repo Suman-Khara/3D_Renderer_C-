@@ -6,15 +6,16 @@ double hit_sphere(const point3 &center, double radius, const ray &r)
 {
     // O= centre of sphere, C=point on surface, A=point of origin of ray [all are vectors]
     // (A+Bt-C).(A+Bt-C)=r^2
-    vec3 oc = r.origin() - center; // oc=A-C
-    auto a = dot(r.direction(), r.direction());
-    auto b = 2.0 * dot(oc, r.direction());
-    auto c = dot(oc, oc) - radius * radius;
-    auto discriminant = b * b - 4 * a * c;
+    vec3 oc = center - r.origin();
+    auto a = r.direction().length_squared();
+    auto h = dot(r.direction(), oc);
+    auto c = oc.length_squared() - radius * radius;
+    auto discriminant = h * h - a * c;
+
     if (discriminant < 0)
         return -1.0;
     else
-        return (-b - std::sqrt(discriminant)) / (2.0 * a);
+        return (h - std::sqrt(discriminant)) / a;
 }
 
 colour ray_color(const ray &r)
