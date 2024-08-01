@@ -2,7 +2,7 @@
 #include "colour.h"
 #include "ray.h"
 
-bool hit_sphere(const point3 &center, double radius, const ray &r)
+double hit_sphere(const point3 &center, double radius, const ray &r)
 {
     // O= centre of sphere, C=point on surface, A=point of origin of ray [all are vectors]
     // (A+Bt-C).(A+Bt-C)=r^2
@@ -11,18 +11,28 @@ bool hit_sphere(const point3 &center, double radius, const ray &r)
     auto b = 2.0 * dot(oc, r.direction());
     auto c = dot(oc, oc) - radius * radius;
     auto discriminant = b * b - 4 * a * c;
-    return (discriminant >= 0);
+    if (discriminant < 0)
+        return -1.0;
+    else
+        return (-b - std::sqrt(discriminant)) / (2.0 * a);
 }
 
 colour ray_color(const ray &r)
 {
-    // this function decides what colour a particular pixel should have based on the ray coming at it from viewport
-    if (hit_sphere(point3(0, 0, -1), 0.5, r))
-        return colour(1, 0, 0);
+    auto t = hit_sphere(point3(0, 0, -1), 0.5, r); // Compute intersection distance.
 
-    vec3 unit_direction = unit_vector(r.direction());
-    auto a = 0.5 * (unit_direction.y() + 1.0);
-    return (1.0 - a) * colour(1.0, 1.0, 1.0) + a * colour(0.5, 0.7, 1.0);
+    // If there is an intersection (t > 0.0), compute the colour based on the normal.
+    if (t > 0.0)
+    {
+        vec3 N = unit_vector(r.at(t) - vec3(0, 0, -1)); // Compute normal at intersection point.
+        // Map normal to colour (normalize components to [0, 1] range).
+        return 0.5 * colour(N.x() + 1, N.y() + 1, N.z() + 1);
+    }
+
+    // If no intersection, create a gradient colour based on vertical position.
+    vec3 unit_direction = unit_vector(r.direction());                     // Normalize ray direction.
+    auto a = 0.5 * (unit_direction.y() + 1.0);                            // Blend factor based on y-component.
+    return (1.0 - a) * colour(1.0, 1.0, 1.0) + a * colour(0.5, 0.7, 1.0); // Gradient from white to blue.
 }
 
 int main()
