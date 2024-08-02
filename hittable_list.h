@@ -3,8 +3,8 @@
 
 #include "hittable.h"
 
-#include <memory>
 #include <vector>
+using namespace std;
 
 class hittable_list : public hittable
 {
@@ -39,6 +39,7 @@ public:
 
         return hit_anything;
     }
+    virtual ~hittable_list() noexcept override = default; // Add noexcept and override
 };
 
 #endif

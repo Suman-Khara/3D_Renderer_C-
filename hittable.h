@@ -1,7 +1,7 @@
 #ifndef HITTABLE_H
 #define HITTABLE_H
 
-#include "ray.h"
+#include "constants.h" //this line is given only to remove the errors coming in hittable_list.h and sphere.h, the main.cpp works just fine without this line
 
 class hit_record
 {
@@ -23,7 +23,7 @@ public:
 class hittable
 {
 public:
-    virtual ~hittable() = default; // Virtual destructor for proper cleanup
+    virtual ~hittable() noexcept = default; // Add noexcept // Virtual destructor for proper cleanup
 
     // Pure virtual function to be overridden by derived classes
     virtual bool hit(const ray &r, double ray_tmin, double ray_tmax, hit_record &rec) const = 0;
