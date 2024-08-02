@@ -6,9 +6,18 @@
 class hit_record
 {
 public:
-    point3 p;    // Point of intersection
-    vec3 normal; // Surface normal at the intersection point
-    double t;    // Ray parameter at the intersection point
+    point3 p;        // Intersection point
+    vec3 normal;     // Normal vector at the intersection
+    double t;        // Distance along the ray to the intersection
+    bool front_face; // True if the ray is hitting the front face
+
+    void set_face_normal(const ray &r, const vec3 &outward_normal)
+    {
+        // Determine if the ray is hitting the front face
+        front_face = dot(r.direction(), outward_normal) < 0;
+        // Set the normal vector to always point against the ray
+        normal = front_face ? outward_normal : -outward_normal;
+    }
 };
 
 class hittable

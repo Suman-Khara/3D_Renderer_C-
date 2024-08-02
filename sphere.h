@@ -7,22 +7,22 @@
 class sphere : public hittable
 {
 public:
-    sphere(const point3 &center, double radius) : center(center), radius(fmax(0, radius)) {}
+    sphere(const point3 &center, double radius) : center(center), radius(std::fmax(0, radius)) {}
 
     bool hit(const ray &r, double ray_tmin, double ray_tmax, hit_record &rec) const override
     {
-        vec3 oc = center - r.origin();                  // Vector from ray origin to sphere center
-        auto a = r.direction().length_squared();        // Length squared of the ray direction
-        auto h = dot(r.direction(), oc);                // Projection of oc onto the ray direction
-        auto c = oc.length_squared() - radius * radius; // Distance squared from sphere center to ray origin minus radius squared
+        vec3 oc = center - r.origin();
+        auto a = r.direction().length_squared();
+        auto h = dot(r.direction(), oc);
+        auto c = oc.length_squared() - radius * radius;
 
-        auto discriminant = h * h - a * c; // Discriminant of the quadratic equation
+        auto discriminant = h * h - a * c;
         if (discriminant < 0)
             return false;
 
-        auto sqrtd = sqrt(discriminant);
+        auto sqrtd = std::sqrt(discriminant);
 
-        // Find the nearest root that lies in the acceptable range
+        // Find the nearest root that lies in the acceptable range.
         auto root = (h - sqrtd) / a;
         if (root <= ray_tmin || ray_tmax <= root)
         {
@@ -32,8 +32,9 @@ public:
         }
 
         rec.t = root;
-        rec.p = r.at(rec.t);                    // Calculate the intersection point
-        rec.normal = (rec.p - center) / radius; // Calculate the normal at the intersection point
+        rec.p = r.at(rec.t);                             // Calculate the intersection point
+        vec3 outward_normal = (rec.p - center) / radius; // Calculate the normal at the intersection point
+        rec.set_face_normal(r, outward_normal);          // Set the normal to always point against the ray
 
         return true;
     }
