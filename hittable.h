@@ -26,7 +26,7 @@ public:
     virtual ~hittable() noexcept = default; // Add noexcept // Virtual destructor for proper cleanup
 
     // Pure virtual function to be overridden by derived classes
-    virtual bool hit(const ray &r, double ray_tmin, double ray_tmax, hit_record &rec) const = 0;
+    virtual bool hit(const ray &r, interval ray_t, hit_record &rec) const = 0;
 };
 
 #endif
